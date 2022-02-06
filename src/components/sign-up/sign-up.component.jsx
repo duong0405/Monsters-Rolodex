@@ -48,7 +48,7 @@ const SignUp = () => {
 
     return (
         <div className="sign-up-container">
-            <h2>Dont have an account?</h2>
+            <h2>Do not have an account?</h2>
             <span>Sign up with your email and password</span>
             <form onSubmit={handleSummit}>
                 <FormInput
@@ -87,7 +87,7 @@ const SignUp = () => {
                     value={confirmPassword}
                 />
 
-                <Button buttonType='google' type="submit">Sign Up</Button>
+                <Button type="submit">Sign Up</Button>
             </form>
         </div>
     )
