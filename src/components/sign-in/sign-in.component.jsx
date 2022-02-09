@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { signInWithGooglePopup, signInUserWithEmailAndPassword, createUserDocument } from "../../utils/firebase/firebase.utils";
 import FormInput from "../form-input/form-input.component";
 import Button from "../button/button.component";
 import "./sign-in.styles.scss"
 
+import { UserContext } from "../../contexts/user.context";
 
 const defaultFormFields = {
     email: "",
@@ -12,69 +13,72 @@ const defaultFormFields = {
 
 const SignIn = () => {
 
-    const [ formFields, setFormFields ] = useState( defaultFormFields );
+    const [formFields, setFormFields] = useState(defaultFormFields);
     const { email, password } = formFields;
 
     const resetForm = () => {
-        setFormFields( defaultFormFields );
+        setFormFields(defaultFormFields);
     }
+
+    const { setCurrentUser } = useContext(UserContext);
 
     const signInWithGoogle = async () => {
         const { user } = await signInWithGooglePopup();
-        await createUserDocument( user );
+        await createUserDocument(user);
     }
 
-    const handleSummit = async ( event ) => {
+    const handleSummit = async (event) => {
         event.preventDefault();
 
         try {
-            await signInUserWithEmailAndPassword( email, password );
+            const { user } = await signInUserWithEmailAndPassword(email, password);
+            setCurrentUser(user);
             resetForm();
-        } catch ( e ) {
-            if ( e.code === "auth/wrong-password" ) {
-                alert( "Incorrect password" );
-            } else if ( e.code === "auth/user-not-found" ) {
-                alert( "User not found. Please register!" )
+        } catch (e) {
+            if (e.code === "auth/wrong-password") {
+                alert("Incorrect password");
+            } else if (e.code === "auth/user-not-found") {
+                alert("User not found. Please register!")
             } else {
-                console.log( e );
+                console.log(e);
             }
         }
     }
 
-    const handleChange = ( event ) => {
+    const handleChange = (event) => {
         const { name, value } = event.target;
 
-        setFormFields( { ...formFields, [ name ]: value } )
+        setFormFields({ ...formFields, [name]: value })
     }
 
     return (
         <div className="sign-up-container">
             <h2>Already have an account?</h2>
             <span>Sign in with your email and password</span>
-            <form onSubmit={ handleSummit }>
+            <form onSubmit={handleSummit}>
                 <FormInput
                     label="Email"
                     type="email"
                     required
-                    onChange={ handleChange }
+                    onChange={handleChange}
                     name="email"
-                    value={ email }
+                    value={email}
                 />
 
                 <FormInput
                     label="Password"
                     type="password"
                     required
-                    onChange={ handleChange }
+                    onChange={handleChange}
                     name="password"
-                    value={ password }
+                    value={password}
                 />
                 <div className="buttons-container">
                     <Button type="submit">Sign In</Button>
                     <Button
                         buttonType='google'
                         type="button"
-                        onClick={ signInWithGoogle }
+                        onClick={signInWithGoogle}
                     >Google sign in</Button>
                 </div>
             </form>
